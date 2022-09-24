@@ -9,6 +9,8 @@ import android.app.NotificationManager;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.widget.Button;
 
@@ -25,6 +27,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
+    protected Editable removeUnderline(Editable t) {
+        for (UnderlineSpan s : t.getSpans(0, t.length(), UnderlineSpan.class)) {
+            t.removeSpan(s);
+        }
+        return t;
+    }
+
     public void pushNotification(View v) {
         TextInputEditText tTitle = findViewById(R.id.notification_title_input);
         TextInputEditText tContent = findViewById(R.id.notification_input);
@@ -33,25 +42,21 @@ public class MainActivity extends AppCompatActivity {
                 .setContentTitle("Reminder!")
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
-        b.setContentText(tTitle.getText());
+        b.setContentText(removeUnderline(tTitle.getText()));
 
         if (!tContent.getText().toString().equals("")) {
-            b.setContentText(tTitle.getText())
+            b.setContentText(removeUnderline(tTitle.getText()))
                     .setStyle(new NotificationCompat.BigTextStyle()
-                            .bigText(tContent.getText()));
+                            .bigText(removeUnderline(tContent.getText())));
 
             if (tTitle.getText().toString().equals("")) {
-                b.setContentText(tContent.getText());
+                b.setContentText(removeUnderline(tContent.getText()));
             }
         }
 
         NotificationManagerCompat nm = NotificationManagerCompat.from(this);
 
-        try {
-            nm.notify(1, b.build());
-        } catch (Exception e) {
-            System.out.println(e.toString());
-        }
+        nm.notify(1, b.build());
     }
 
     private void createNotificationChannel() {
