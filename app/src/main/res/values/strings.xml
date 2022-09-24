@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">NotifReminders</string>
+    <string name="reminder_hint">Enter Reminder…</string>
+    <string name="notification_push">Push To Notifications</string>
+    <string name="channel_name">NotifReminder</string>
+    <string name="channel_description">remember the thing</string>
+    <string name="reminder_title_hint">Enter Reminder Title...</string>
+</resources>
