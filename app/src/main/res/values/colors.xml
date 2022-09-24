@@ -2,6 +2,9 @@
 <resources>
     <color name="lavender">#DDCCFF</color>
     <color name="lighter_lavender">#F5F1FF</color>
+    <color name="less_lighter_lavender">#E7DCFF</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="base_grey">#C8C8C8</color></resources>
+    <color name="base_grey">#C8C8C8</color>
+    <color name="text_input_colour">#FFFFFF</color>
+</resources>
