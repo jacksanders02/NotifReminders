@@ -9,10 +9,10 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/notification_title_input_container"
         android:layout_width="360dp"
-
         android:layout_height="wrap_content"
 
         android:hint="@string/reminder_title_hint"
+        android:textColorHint="@color/less_lighter_lavender"
         app:layout_constraintBottom_toTopOf="@+id/notification_input_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,6 +24,10 @@
 
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/text_input_rounded"
+
+            android:shadowColor="@color/less_lighter_lavender"
+            android:textColor="@color/black"
 
             android:gravity="top|start"
             android:inputType="text"
@@ -35,10 +39,10 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/notification_input_container"
         android:layout_width="360dp"
-
         android:layout_height="wrap_content"
 
         android:hint="@string/reminder_hint"
+        android:textColorHint="@color/less_lighter_lavender"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -49,6 +53,10 @@
 
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/text_input_rounded"
+
+            android:shadowColor="@color/less_lighter_lavender"
+            android:textColor="@color/black"
 
             android:gravity="top|start"
             android:inputType="textMultiLine"
@@ -67,7 +75,8 @@
         android:text="@string/notification_push"
         android:textColor="@color/black"
 
-        app:backgroundTint="@color/base_grey"
+        app:backgroundTint="@color/white"
+        android:shadowRadius="0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
