@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.style.UnderlineSpan;
 import android.view.View;
@@ -37,9 +38,6 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     private final String CHANNEL_ID = "NotifReminderChannel";
-    private File REMINDER_STORAGE;
-    private final HashMap<Integer, String[]> reminderKeys = new HashMap<>();
-    private final HashSet<Integer> takenNotifIDs = new HashSet<>();
     private int currentNotifID;
 
     @Override
@@ -48,37 +46,11 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         createNotificationChannel();
         setContentView(R.layout.activity_main);
-        REMINDER_STORAGE = new File(this.getFilesDir(), "reminders.txt");
-
-        try {
-            FileInputStream fis = this.openFileInput("reminders.txt");
-            InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
-            BufferedReader reader = new BufferedReader(isr);
-            String line;
-            currentNotifID = 0;
-            while ((line = reader.readLine()) != null) {
-                addNotifToHash(line);
-            }
-
-            reader.close();
-        } catch (IOException e) {
-            System.out.println(e);
-        }
+        updateCurrentID();
     }
 
     protected void updateCurrentID() {
-        currentNotifID = 0;
-        while (takenNotifIDs.contains(currentNotifID)) {
-            currentNotifID++;
-        }
-    }
-
-    protected void addNotifToHash(String s) {
-        String[] toHash = s.split(" : ");
-        int newID = Integer.parseInt(toHash[0]);
-        reminderKeys.put(newID, Arrays.copyOfRange(toHash, 1, 3));
-        takenNotifIDs.add(newID);
-        updateCurrentID();
+        currentNotifID = (int) SystemClock.uptimeMillis();
     }
 
     protected Editable removeUnderline(Editable t) {
@@ -94,7 +66,8 @@ public class MainActivity extends AppCompatActivity {
         NotificationCompat.Builder b = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_reminder_notification)
                 .setContentTitle("Reminder!")
-                .setPriority(NotificationCompat.PRIORITY_MAX);
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setGroup(String.valueOf(currentNotifID));
 
         Editable title = removeUnderline(tTitle.getText());
         Editable content = removeUnderline(tContent.getText());
@@ -114,21 +87,7 @@ public class MainActivity extends AppCompatActivity {
         NotificationManagerCompat nm = NotificationManagerCompat.from(this);
 
         nm.notify(currentNotifID, b.build());
-
-        String describer = currentNotifID + " : " + String.valueOf(title) + " : " + String.valueOf(content);
-
-        try {
-            FileWriter fw = new FileWriter(REMINDER_STORAGE, true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(describer + "\n");
-            bw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //System.out.println(currentNotifID);
-
-        addNotifToHash(describer);
+        updateCurrentID();
     }
 
     private void createNotificationChannel() {
