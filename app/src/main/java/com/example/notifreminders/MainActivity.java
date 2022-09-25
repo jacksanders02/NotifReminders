@@ -43,13 +43,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().hide();
+        getSupportActionBar().hide(); // Hide app title bar
         createNotificationChannel();
         setContentView(R.layout.activity_main);
         updateCurrentID();
     }
 
     protected void updateCurrentID() {
+        // Set ID for the next notification to the uptime of the system (makes collisions highly unlikely)
         currentNotifID = (int) SystemClock.uptimeMillis();
     }
 
@@ -61,23 +62,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void pushNotification(View v) {
+        // Grab reminder title/content from app inputs
         TextInputEditText tTitle = findViewById(R.id.notification_title_input);
         TextInputEditText tContent = findViewById(R.id.notification_input);
+
+        // Create notification builder
         NotificationCompat.Builder b = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_reminder_notification)
                 .setContentTitle("Reminder!")
                 .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setGroup(String.valueOf(currentNotifID));
+                .setGroup(String.valueOf(currentNotifID)); // Group ID prevents bundling of reminders
 
+        // Remove Gboard's underline from text
         Editable title = removeUnderline(tTitle.getText());
         Editable content = removeUnderline(tContent.getText());
 
-        b.setContentText(removeUnderline(tTitle.getText()));
+        b.setContentText(title);
 
         if (!tContent.getText().toString().equals("")) {
-            b.setContentText(title)
-                    .setStyle(new NotificationCompat.BigTextStyle()
-                            .bigText(content));
+            b.setStyle(new NotificationCompat.BigTextStyle()
+                    .bigText(content));
 
             if (tTitle.getText().toString().equals("")) {
                 b.setContentText(content);
