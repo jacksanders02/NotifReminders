@@ -6,6 +6,7 @@ import androidx.core.app.NotificationManagerCompat;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,9 +17,30 @@ import android.widget.Button;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity {
 
     private final String CHANNEL_ID = "NotifReminderChannel";
+    private File REMINDER_STORAGE;
+    private final HashMap<Integer, String[]> reminderKeys = new HashMap<>();
+    private final HashSet<Integer> takenNotifIDs = new HashSet<>();
+    private int currentNotifID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +48,37 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         createNotificationChannel();
         setContentView(R.layout.activity_main);
+        REMINDER_STORAGE = new File(this.getFilesDir(), "reminders.txt");
+
+        try {
+            FileInputStream fis = this.openFileInput("reminders.txt");
+            InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
+            BufferedReader reader = new BufferedReader(isr);
+            String line;
+            currentNotifID = 0;
+            while ((line = reader.readLine()) != null) {
+                addNotifToHash(line);
+            }
+
+            reader.close();
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
+    protected void updateCurrentID() {
+        currentNotifID = 0;
+        while (takenNotifIDs.contains(currentNotifID)) {
+            currentNotifID++;
+        }
+    }
+
+    protected void addNotifToHash(String s) {
+        String[] toHash = s.split(" : ");
+        int newID = Integer.parseInt(toHash[0]);
+        reminderKeys.put(newID, Arrays.copyOfRange(toHash, 1, 3));
+        takenNotifIDs.add(newID);
+        updateCurrentID();
     }
 
     protected Editable removeUnderline(Editable t) {
@@ -43,21 +96,39 @@ public class MainActivity extends AppCompatActivity {
                 .setContentTitle("Reminder!")
                 .setPriority(NotificationCompat.PRIORITY_MAX);
 
+        Editable title = removeUnderline(tTitle.getText());
+        Editable content = removeUnderline(tContent.getText());
+
         b.setContentText(removeUnderline(tTitle.getText()));
 
         if (!tContent.getText().toString().equals("")) {
-            b.setContentText(removeUnderline(tTitle.getText()))
+            b.setContentText(title)
                     .setStyle(new NotificationCompat.BigTextStyle()
-                            .bigText(removeUnderline(tContent.getText())));
+                            .bigText(content));
 
             if (tTitle.getText().toString().equals("")) {
-                b.setContentText(removeUnderline(tContent.getText()));
+                b.setContentText(content);
             }
         }
 
         NotificationManagerCompat nm = NotificationManagerCompat.from(this);
 
-        nm.notify(1, b.build());
+        nm.notify(currentNotifID, b.build());
+
+        String describer = currentNotifID + " : " + String.valueOf(title) + " : " + String.valueOf(content);
+
+        try {
+            FileWriter fw = new FileWriter(REMINDER_STORAGE, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(describer + "\n");
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //System.out.println(currentNotifID);
+
+        addNotifToHash(describer);
     }
 
     private void createNotificationChannel() {
