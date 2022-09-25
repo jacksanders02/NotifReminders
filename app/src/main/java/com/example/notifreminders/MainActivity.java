@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         NotificationCompat.Builder b = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_reminder_notification)
                 .setContentTitle("Reminder!")
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
+                .setPriority(NotificationCompat.PRIORITY_MAX);
 
         b.setContentText(removeUnderline(tTitle.getText()));
 
