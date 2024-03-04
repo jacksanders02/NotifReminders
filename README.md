@@ -6,6 +6,7 @@ An android app to store reminders in your notifications bar - for the forgetful.
 
 ## Download & Install
 The APK for this app can be downloaded from the "releases" section ([Releases Section](https://github.com/jacksanders02/NotifReminders/releases)).
+
 Once downloaded, you can install the APK simply by tapping on it.
 
 ![NotifReminder Demo](https://user-images.githubusercontent.com/43889196/192306624-05ea18ec-be34-4d01-846d-45cf0144e139.gif)
